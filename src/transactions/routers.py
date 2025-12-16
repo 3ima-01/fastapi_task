@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db_models import *
 from exceptions import (
     BadRequestDataException,
     CreateTransactionForBlockedUserException,
@@ -27,6 +26,9 @@ from queries import (
     get_transactions_count,
 )
 from src.database import get_async_session
+from src.transactions.models.transaction import Transaction
+from src.users.models.user import User
+from src.users.models.userbalance import UserBalance
 
 router = APIRouter(prefix="", tags=["Transactions"])
 

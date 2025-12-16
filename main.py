@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import Depends, FastAPI
 from sqlalchemy.ext.asyncio import AsyncSession
 

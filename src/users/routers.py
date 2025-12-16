@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db_models import *
 from exceptions import (
     BadRequestDataException,
     UserAlreadyActiveException,
@@ -14,6 +13,8 @@ from exceptions import (
 )
 from python_models import *
 from src.database import get_async_session
+from src.users.models.user import User
+from src.users.models.userbalance import UserBalance
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
