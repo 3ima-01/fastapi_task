@@ -13,7 +13,6 @@ from exceptions import (
     TransactionDoesNotBelongToUserException,
     TransactionNotExistsException,
     UpdateTransactionForBlockedUserException,
-    UserNotExistsException,
 )
 from python_models import *
 from queries import (
@@ -27,6 +26,7 @@ from queries import (
 )
 from src.database import get_async_session
 from src.transactions.models.transaction import Transaction
+from src.users.exceptions import UserNotExistsException
 from src.users.models.user import User
 from src.users.models.userbalance import UserBalance
 
@@ -83,9 +83,7 @@ async def post_transaction(
     db_user = await session.execute(select(User).where(User.id == user_id))
     db_user = db_user.scalar()
     if not db_user:
-        raise UserNotExistsException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User with id=`{0}` does not exist".format(user_id)
-        )
+        raise UserNotExistsException(user_id)
     if db_user.status != "ACTIVE":
         raise CreateTransactionForBlockedUserException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User with id=`{0}` is blocked".format(user_id)
@@ -127,9 +125,7 @@ async def patch_rollback_transaction(
     db_user = await session.execute(select(User).where(User.id == user_id))
     db_user = db_user.scalar()
     if not db_user:
-        raise UserNotExistsException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User with id=`{0}` does not exist".format(user_id)
-        )
+        raise UserNotExistsException(user_id)
     db_transaction = await session.execute(select(Transaction).where(Transaction.id == transaction_id))
     db_transaction = db_transaction.scalar()
     if not db_transaction:

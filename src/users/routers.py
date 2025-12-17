@@ -4,15 +4,15 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from exceptions import (
-    BadRequestDataException,
+from exceptions import BadRequestDataException
+from python_models import *
+from src.database import get_async_session
+from src.users.exceptions import (
     UserAlreadyActiveException,
     UserAlreadyBlockedException,
     UserAlreadyExistsException,
     UserNotExistsException,
 )
-from python_models import *
-from src.database import get_async_session
 from src.users.models.user import User
 from src.users.models.userbalance import UserBalance
 
@@ -58,9 +58,7 @@ async def post_user(user: RequestUserModel, session: AsyncSession = Depends(get_
         )
     db_user = await session.execute(select(User).where(User.email == user.email))
     if db_user.scalar():
-        raise UserAlreadyExistsException(
-            status_code=status.HTTP_409_CONFLICT, detail="User with email=`{0}` already exists".format(user.email)
-        )
+        raise UserAlreadyExistsException(user.email)
     db_user = User(email=user.email, status="ACTIVE", created=datetime.utcnow())
     session.add(db_user)
     await session.commit()
@@ -84,17 +82,11 @@ async def patch_user(user_id: int, user: RequestUserUpdateModel, session: AsyncS
     db_user = await session.execute(select(User).where(User.id == user_id))
     db_user = db_user.scalar()
     if not db_user:
-        raise UserNotExistsException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User with id=`{0}` does not exist".format(user_id)
-        )
+        raise UserNotExistsException(user_id)
     if db_user.status == "BLOCKED" and user.status == "BLOCKED":
-        raise UserAlreadyBlockedException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User with id=`{0}` is already blocked".format(user_id)
-        )
+        raise UserAlreadyBlockedException(user_id)
     if db_user.status == "ACTIVE" and user.status == "ACTIVE":
-        raise UserAlreadyActiveException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User with id=`{0}` is already active".format(user_id)
-        )
+        raise UserAlreadyActiveException(user_id)
     await session.execute(update(User).values(**{"status": user.status}).where(User.id == user_id))
     await session.commit()
     user = await session.execute(select(User).where(User.id == user_id))
