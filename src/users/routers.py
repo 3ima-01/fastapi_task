@@ -1,12 +1,14 @@
-import datetime
+from datetime import datetime
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from exceptions import BadRequestDataException
-from python_models import *
+from python_models import CurrencyEnum
 from src.database import get_async_session
+from src.users.enums import UserStatusEnum
 from src.users.exceptions import (
     UserAlreadyActiveException,
     UserAlreadyBlockedException,
@@ -15,17 +17,18 @@ from src.users.exceptions import (
 )
 from src.users.models.user import User
 from src.users.models.userbalance import UserBalance
+from src.users.schemas import RequestUserModel, RequestUserUpdateModel, ResponseUserModel, UserModel
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/users", response_model=typing.Optional[list[ResponseUserModel]] | None, status_code=status.HTTP_200_OK)
+@router.get("/users", response_model=Optional[list[ResponseUserModel]] | None, status_code=status.HTTP_200_OK)
 async def get_users(
-    user_id: typing.Optional[int] = None,
-    email: typing.Optional[str] = None,
-    user_status: typing.Optional[str] = None,
+    user_id: Optional[int] = None,
+    email: Optional[str] = None,
+    user_status: Optional[str] = None,
     session: AsyncSession = Depends(get_async_session),
-) -> typing.List[ResponseUserModel]:
+) -> List[ResponseUserModel]:
     q = select(User).order_by(User.created.desc())
     if user_id is not None:
         q = q.where(User.id == user_id)
@@ -73,7 +76,7 @@ async def post_user(user: RequestUserModel, session: AsyncSession = Depends(get_
     return result
 
 
-@router.patch("/users/{user_id}", response_model=typing.Optional[UserModel] | None)
+@router.patch("/users/{user_id}", response_model=Optional[UserModel] | None)
 async def patch_user(user_id: int, user: RequestUserUpdateModel, session: AsyncSession = Depends(get_async_session)):
     if user_id < 0:
         raise BadRequestDataException(
