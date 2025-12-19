@@ -17,6 +17,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "faker>=19.10.0,<20",
+    "mypy>=1.19.1",
     "pylint>=3.0.1,<4",
     "pylint-pydantic>=0.3.0,<0.4",
     "pytest>=7.4.2,<8",

@@ -4,18 +4,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel
 
-
-class CurrencyEnum(StrEnum):
-    USD = "USD"
-    EUR = "EUR"
-    AUD = "AUD"
-    CAD = "CAD"
-    ARS = "ARS"
-    PLN = "PLN"
-    BTC = "BTC"
-    ETH = "ETH"
-    DOGE = "DOGE"
-    USDT = "USDT"
+from src.users.enums import CurrencyEnum
 
 
 class TransactionStatusEnum(StrEnum):

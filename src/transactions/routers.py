@@ -28,7 +28,7 @@ from src.database import get_async_session
 from src.transactions.models.transaction import Transaction
 from src.users.exceptions import UserNotExistsException
 from src.users.models.user import User
-from src.users.models.userbalance import UserBalance
+from src.users.models.user_balance import UserBalance
 
 router = APIRouter(prefix="", tags=["Transactions"])
 

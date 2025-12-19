@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import create_db_and_tables, get_async_session
 from src.transactions.routers import router as transactions_router
-from src.users.routers import router as users_router
+from src.users.routers.users import router as users_router
 
 app = FastAPI()
 app.include_router(users_router)

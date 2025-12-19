@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
-engine = create_async_engine("sqlite+aiosqlite:///db.sqlite3")
+engine = create_async_engine("sqlite+aiosqlite:///db.sqlite3", echo=True)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 

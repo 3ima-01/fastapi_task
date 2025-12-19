@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, Optional, Sequence
 
-from pydantic import BaseModel, EmailStr, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
 
-from python_models import CurrencyEnum
-from src.users.enums import UserStatusEnum
+from src.users.enums import CurrencyEnum, UserStatusEnum
 
 
 class RequestUserModel(BaseModel):
@@ -16,16 +15,20 @@ class RequestUserUpdateModel(BaseModel):
 
 
 class ResponseUserBalanceModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     currency: Optional[CurrencyEnum] = None
     amount: Optional[float] = None
 
 
 class ResponseUserModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: Optional[int]
     email: Optional[EmailStr] = None
     status: Optional[UserStatusEnum] = None
     created: Optional[datetime] = None
-    balances: Optional[List[ResponseUserBalanceModel]] = None
+    balances: Optional[Sequence[ResponseUserBalanceModel]] = None
 
 
 class UserModel(BaseModel):
