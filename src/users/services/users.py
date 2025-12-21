@@ -9,6 +9,7 @@ from src.users.exceptions import (
     UserAlreadyActiveException,
     UserAlreadyBlockedException,
     UserAlreadyExistsException,
+    UserIsBlockedException,
     UserNotExistsException,
 )
 from src.users.models.user import User
@@ -23,7 +24,7 @@ from src.utils.utils import utc_now
 
 
 class UsersService:
-    async def get_user_by_id(self, session: AsyncSession, user_id: int) -> User:
+    async def get_active_user(self, session: AsyncSession, user_id: int) -> User:
         """
         Retrieve a single user by ID. Raises UserNotExistsException if not found.
         Does NOT load related data.
@@ -31,6 +32,10 @@ class UsersService:
         user = await session.scalar(select(User).where(User.id == user_id))
         if not user:
             raise UserNotExistsException(user_id)
+
+        if user.status != UserStatusEnum.ACTIVE:
+            raise UserIsBlockedException(user.id)
+
         return user
 
     async def get_users_with_relations(
@@ -129,7 +134,7 @@ class UsersService:
                 raise UserNotExistsException(user_id)
 
             current_status = db_user.status
-            new_status = update_data.status.value
+            new_status = update_data.status
 
             if current_status == new_status:
                 if current_status == UserStatusEnum.BLOCKED:

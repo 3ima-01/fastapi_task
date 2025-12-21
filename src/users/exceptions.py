@@ -29,3 +29,9 @@ class UserIsBlockedException(HTTPException):
     def __init__(self, user_id: int) -> None:
         detail = f"User with id=`{user_id}` is blocked"
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+
+class UserBalanceDoesNotExists(HTTPException):
+    def __init__(self, user_id: int) -> None:
+        detail = f"Balance for user id=`{user_id}` does not exists"
+        super().__init__(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=detail)

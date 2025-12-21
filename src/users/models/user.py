@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Integer, String, desc
+from sqlalchemy import DateTime, Integer, String
 from sqlalchemy import Enum as saEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,6 +10,7 @@ from src.users.enums import UserStatusEnum
 from src.utils.utils import utc_now
 
 if TYPE_CHECKING:
+    from src.transactions.models.transaction import Transaction
     from src.users.models.user_balance import UserBalance
 
 
@@ -29,4 +28,9 @@ class User(Base):
         "UserBalance",
         back_populates="owner",
         order_by="desc(UserBalance.amount)",
+    )
+    transactions: Mapped[list["Transaction"]] = relationship(
+        "Transaction",
+        back_populates="user",
+        order_by="desc(Transaction.created)",
     )

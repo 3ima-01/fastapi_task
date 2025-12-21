@@ -5,10 +5,10 @@ from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_async_session
-from src.users.dependencies import validate_positive_user_id
 from src.users.enums import UserStatusEnum
 from src.users.schemas import RequestUserModel, RequestUserUpdateModel, ResponseUserModel, UserModel
 from src.users.services.users import UsersService
+from src.utils.dependencies import validate_positive_id
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -43,7 +43,7 @@ async def post_user(user: RequestUserModel, session: AsyncSession = Depends(get_
 )
 async def patch_user(
     update_data: RequestUserUpdateModel,
-    user_id: int = Depends(validate_positive_user_id),
+    user_id: int = Depends(validate_positive_id),
     session: AsyncSession = Depends(get_async_session),
 ) -> Optional[UserModel]:
     return await UsersService().patch_user_status(session, user_id=user_id, update_data=update_data)

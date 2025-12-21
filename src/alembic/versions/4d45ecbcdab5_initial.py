@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 522d79a96d22
+Revision ID: 4d45ecbcdab5
 Revises: 
-Create Date: 2025-12-21 11:33:22.085510
+Create Date: 2025-12-21 15:15:07.654526
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '522d79a96d22'
+revision: str = '4d45ecbcdab5'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
-    sa.Column('status', sa.Enum('ACTIVE', 'BLOCKED', name='user_status_enum'), nullable=True),
+    sa.Column('status', sa.Enum('ACTIVE', 'BLOCKED', name='user_status_enum'), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
@@ -35,7 +35,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('currency', sa.String(), nullable=False),
     sa.Column('amount', sa.Numeric(), nullable=False),
-    sa.Column('status', sa.Enum('processed', 'roll_backed', name='transaction_status_enum'), nullable=True),
+    sa.Column('status', sa.Enum('PROCESSED', 'ROLL_BACKED', name='transaction_status_enum'), nullable=True),
     sa.Column('created', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
