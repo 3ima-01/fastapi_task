@@ -23,3 +23,9 @@ class UserAlreadyActiveException(HTTPException):
     def __init__(self, user_id: int) -> None:
         detail = f"User with id=`{user_id}` is already active"
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+
+
+class UserIsBlockedException(HTTPException):
+    def __init__(self, user_id: int) -> None:
+        detail = f"User with id=`{user_id}` is blocked"
+        super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)

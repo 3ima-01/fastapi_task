@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,9 +19,20 @@ from src.users.schemas import (
     ResponseUserModel,
     UserModel,
 )
+from src.utils.utils import utc_now
 
 
 class UsersService:
+    async def get_user_by_id(self, session: AsyncSession, user_id: int) -> User:
+        """
+        Retrieve a single user by ID. Raises UserNotExistsException if not found.
+        Does NOT load related data.
+        """
+        user = await session.scalar(select(User).where(User.id == user_id))
+        if not user:
+            raise UserNotExistsException(user_id)
+        return user
+
     async def get_users_with_relations(
         self,
         session: AsyncSession,
@@ -66,7 +76,7 @@ class UsersService:
         self,
         session: AsyncSession,
         user: RequestUserModel,
-    ):
+    ) -> UserModel:
         """
         Creates a new user with zero-initialized balances for all supported currencies.
         1. Checks if a user with the given email already exists.
@@ -79,14 +89,14 @@ class UsersService:
                 raise UserAlreadyExistsException(user.email)
 
             # --- user create ---
-            now = datetime.now()
+            now = utc_now()
             db_user = User(email=user.email, status="ACTIVE", created=now)
             session.add(db_user)
 
             await session.flush()
 
             currencies = [c.value for c in CurrencyEnum]
-            balance_data = [
+            balance_data: list[dict[str, Any]] = [
                 {"user_id": db_user.id, "currency": cur, "amount": 0.0, "created": now} for cur in currencies
             ]
 
@@ -103,14 +113,14 @@ class UsersService:
                 created=db_user.created,
             )
 
-    async def patch_user(
+    async def patch_user_status(
         self,
         session: AsyncSession,
         user_id: int,
         update_data: RequestUserUpdateModel,
-    ):
+    ) -> UserModel:
         """
-        Patch user status
+        Patch user status with RequestUserUpdateModel data
         """
         async with session.begin():
             db_user = await session.scalar(select(User).where(User.id == user_id).with_for_update())

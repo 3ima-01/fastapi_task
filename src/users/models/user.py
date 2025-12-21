@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import DateTime, Integer, String, desc
+from sqlalchemy import Enum as saEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
 from src.users.enums import UserStatusEnum
+from src.utils.utils import utc_now
 
 if TYPE_CHECKING:
     from src.users.models.user_balance import UserBalance
@@ -17,8 +19,11 @@ class User(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
-    status: Mapped[str] = mapped_column(String, default=UserStatusEnum.ACTIVE)
-    created: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    status: Mapped[UserStatusEnum] = mapped_column(
+        saEnum(UserStatusEnum, name="user_status_enum"),
+        default=UserStatusEnum.ACTIVE,
+    )
+    created: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     user_balance: Mapped[list["UserBalance"]] = relationship(
         "UserBalance",
