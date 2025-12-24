@@ -1,0 +1,12 @@
+.venv/
+.env.example
+docker/
+tests/
+
+.git
+.gitignore
+
+__pycache__/
+*.pyc
+
+.pre-commit*
