@@ -9,11 +9,12 @@ from src.transactions.schemas import RequestTransactionModel, TransactionModel
 from src.transactions.services.transactions import TransactionsService
 from src.utils.dependencies import validate_positive_id
 
-router = APIRouter(prefix="", tags=["Transactions"])
+
+router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 
 @router.get(
-    "/transactions",
+    "",
     response_model=Optional[list[TransactionModel]],
     status_code=status.HTTP_200_OK,
 )
@@ -28,7 +29,7 @@ async def get_transactions(
 
 
 @router.post(
-    "/{user_id}/transactions",
+    "/{user_id}",
     response_model=Optional[TransactionModel],
     status_code=status.HTTP_200_OK,
 )
@@ -45,7 +46,7 @@ async def post_transaction(
 
 
 @router.patch(
-    "/{user_id}/transactions/{transaction_id}",
+    "/{user_id}/{transaction_id}",
     response_model=Optional[TransactionModel],
     status_code=status.HTTP_200_OK,
 )
@@ -61,8 +62,6 @@ async def patch_rollback_transaction(
     )
 
 
-@router.get(
-    "/transactions/analysis", response_model=Optional[list[dict[str, Any]]] | None, status_code=status.HTTP_200_OK
-)
+@router.get("/analysis", response_model=Optional[list[dict[str, Any]]] | None, status_code=status.HTTP_200_OK)
 async def get_transaction_analysis(session: AsyncSession = Depends(get_async_session)) -> list[dict[str, Any]]:
     return await AnalyticsService().generate_weekly_reports(session)
