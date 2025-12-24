@@ -1,34 +1,31 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
 
-from fastapi import status
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from exceptions import BadRequestDataException
+from src.exceptions import BadRequestDataException
 from src.transactions.enums import TransactionStatusEnum
 from src.users.enums import CurrencyEnum
 
 
 class RequestTransactionModel(BaseModel):
     currency: CurrencyEnum
-    amount: float
+    amount: Decimal = Field(max_digits=12, decimal_places=2)
 
     @field_validator("amount")
     @classmethod
     def amount_not_zero(cls, v: Decimal) -> Decimal:
         if v == 0:
-            raise BadRequestDataException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Transaction can not have zero amount",
-            )
+            raise BadRequestDataException(detail="Transaction can not have zero amount")
         return v
 
 
 class TransactionModel(BaseModel):
-    id: Optional[int]
-    user_id: Optional[int] = None
-    currency: Optional[CurrencyEnum] = None
-    amount: Optional[float] = None
-    status: Optional[TransactionStatusEnum] = None
-    created: Optional[datetime] = None
+    id: int
+    user_id: int
+    currency: CurrencyEnum
+    amount: float
+    status: TransactionStatusEnum
+    created: datetime
+
+    model_config = ConfigDict(from_attributes=True)

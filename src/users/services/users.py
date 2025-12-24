@@ -17,6 +17,7 @@ from src.users.models.user_balance import UserBalance
 from src.users.schemas import (
     RequestUserModel,
     RequestUserUpdateModel,
+    ResponseUserBalanceModel,
     ResponseUserModel,
     UserModel,
 )
@@ -65,13 +66,14 @@ class UsersService:
 
         response_users: list[ResponseUserModel] = []
         for user in users:
+            balances = [ResponseUserBalanceModel.model_validate(balance) for balance in user.user_balance]
             response_users.append(
                 ResponseUserModel(
                     id=user.id,
                     email=user.email,
                     status=UserStatusEnum(user.status),
                     created=user.created,
-                    balances=user.user_balance,
+                    balances=balances,
                 )
             )
 

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Optional, Sequence
+from typing import Optional
 
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +11,7 @@ from src.transactions.exceptions import (
     TransactionDoesNotBelongToUserException,
     TransactionNotExistsException,
 )
-from src.transactions.models.transaction import Transaction
+from src.transactions.models import Transaction
 from src.transactions.schemas import RequestTransactionModel, TransactionModel
 from src.users.exceptions import UserBalanceDoesNotExists
 from src.users.models import UserBalance
@@ -29,19 +29,19 @@ class TransactionsService:
         user_id: Optional[int] = None,
         skip: int = 0,
         limit: int = 50,
-    ) -> Sequence[TransactionModel]:
+    ) -> list[TransactionModel]:
         query = select(Transaction).order_by(desc(Transaction.created)).offset(skip).limit(limit)
         if user_id:
             query = query.where(Transaction.user_id == user_id)
         result = await session.execute(query)
-        return result.scalars().all()
+        return [TransactionModel.model_validate(transaction) for transaction in result.scalars().all()]
 
     async def create_user_transaction(
         self,
         session: AsyncSession,
         transaction: RequestTransactionModel,
         user_id: int,
-    ):
+    ) -> TransactionModel:
         async with session.begin():
             user = await self.users_service.get_active_user(session, user_id)
 
@@ -72,7 +72,7 @@ class TransactionsService:
             session.add(new_transaction)
 
             await session.flush()
-            return new_transaction
+            return TransactionModel.model_validate(new_transaction)
 
     async def rollback(
         self,
@@ -115,4 +115,4 @@ class TransactionsService:
         await session.commit()
         await session.refresh(transaction)
 
-        return transaction
+        return TransactionModel.model_validate(transaction)
