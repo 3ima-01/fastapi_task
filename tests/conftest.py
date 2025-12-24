@@ -11,8 +11,6 @@ from sqlalchemy.pool import NullPool
 
 from main import app
 from src.database import Base, get_async_session
-from src.transactions.models import Transaction
-from src.users.models import User, UserBalance
 
 
 TEST_DB_PATH = os.path.join(tempfile.gettempdir(), "test_fastapi.db")
