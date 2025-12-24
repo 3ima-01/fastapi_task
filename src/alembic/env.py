@@ -7,6 +7,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from src.config import settigns
+from src.database import Base
+from src.transactions.models import Transaction
+from src.users.models import User, UserBalance
+
+__all_models__ = [User, UserBalance, Transaction]
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,9 +27,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from src.database import Base
-from src.transactions.models import Transaction
-from src.users.models import User, UserBalance
+
 
 target_metadata = Base.metadata
 
