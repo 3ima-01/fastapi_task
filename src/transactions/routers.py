@@ -46,7 +46,7 @@ async def post_transaction(
 
 
 @router.patch(
-    "/{user_id}/{transaction_id}",
+    "/{transaction_id}/user/{user_id}/rollback",
     response_model=Optional[TransactionModel],
     status_code=status.HTTP_200_OK,
 )

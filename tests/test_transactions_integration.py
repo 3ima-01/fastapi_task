@@ -80,7 +80,7 @@ class TestTransactions:
             await client.post(f"{self.base_url}/{user_id}", json={"amount": 100.0, "currency": CurrencyEnum.USD})
         ).json()["id"]
 
-        response = await client.patch(f"{self.base_url}/{user_id}/{tx_id}")
+        response = await client.patch(f"{self.base_url}/{tx_id}/user/{user_id}/rollback")
         assert response.status_code == httpx.codes.OK
         data = response.json()
         assert data["id"] == tx_id
@@ -88,6 +88,5 @@ class TestTransactions:
 
     async def test_patch_rollback_nonexistent_transaction(self, client: httpx.AsyncClient):
         user_id = (await client.post("/users", json={"email": "no_tx@test.com"})).json()["id"]
-
-        response = await client.patch(f"{self.base_url}/{user_id}/999999")
+        response = await client.patch(f"{self.base_url}/99999/user/{user_id}/rollback")
         assert response.status_code == httpx.codes.BAD_REQUEST
