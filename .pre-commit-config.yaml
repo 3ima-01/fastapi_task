@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: |
+          (?x)^(
+            alembic/versions/.*\.py
+          )$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+
+  - repo: local
+    hooks:
+      # Ruff linter
+      - id: ruff-check
+        name: ruff lint
+        entry: ruff check --fix
+        language: system
+        types: [python]
+        pass_filenames: true
+        exclude: |
+          (?x)^(
+            alembic/versions/.*\.py
+          )$
+
+      # Ruff formatter
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format
+        language: system
+        types: [python]
+        pass_filenames: true
+        exclude: |
+          (?x)^(
+            alembic/versions/.*\.py
+          )$
+
+      # Mypy
+      - id: mypy
+        name: mypy type checking
+        entry: python -m mypy
+        language: system
+        types: [python]
+        args: [
+          "src/",
+          "--config-file", "pyproject.toml",
+          "--show-error-codes",
+          "--pretty"
+        ]
+        require_serial: true
+        pass_filenames: false
+        files: ^src/

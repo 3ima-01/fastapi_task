@@ -1,37 +1,62 @@
-[tool.poetry]
+[project]
 name = "task"
 version = "0.1.0"
 description = ""
-authors = ["Author <author@gmail.com>"]
+authors = [{ name = "Author", email = "author@gmail.com" }]
+requires-python = ">=3.11, <3.13"
 readme = "README.md"
+dependencies = [
+    "uvicorn>=0.23.2,<0.24",
+    "httpx>=0.25.0,<0.26",
+    "fastapi>=0.115.6,<0.116",
+    "sqlalchemy>=2.0.37,<3",
+    "aiosqlite>=0.20.0,<0.21",
+    "pydantic[email]>=2.12.5",
+    "alembic>=1.17.2",
+    "pydantic-settings>=2.12.0",
+    "asyncpg>=0.31.0",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.11, <3.13"
-uvicorn = "^0.23.2"
-httpx = "^0.25.0"
-fastapi = "^0.115.6"
-sqlalchemy = "^2.0.37"
-aiosqlite = "^0.20.0"
+[dependency-groups]
+dev = [
+    "faker>=19.10.0,<20",
+    "mypy>=1.19.1",
+    "pre-commit>=4.5.1",
+    "pylint>=3.0.1,<4",
+    "pylint-pydantic>=0.3.0,<0.4",
+    "pytest>=7.4.2,<8",
+    "pytest-alembic>=0.10.7,<0.11",
+    "pytest-asyncio>=0.21.1,<0.22",
+    "pytest-cov>=4.1.0,<5",
+    "pytest-env>=1.0.1,<2",
+    "pytest-httpx>=0.26.0,<0.27",
+    "pytest-mock>=3.11.1,<4",
+    "pytest-mock-server>=0.3.0,<0.4",
+    "pytest-xdist>=3.3.1,<4",
+    "ruff>=0.14.10",
+]
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
 
-[tool.poetry.group.dev.dependencies]
-faker = "^19.10.0"
-pylint = "^3.0.1"
-pylint-pydantic = "^0.3.0"
-pytest = "^7.4.2"
-pytest-alembic = "^0.10.7"
-pytest-asyncio = "^0.21.1"
-pytest-cov = "^4.1.0"
-pytest-env = "^1.0.1"
-pytest-httpx = "^0.26.0"
-pytest-mock = "^3.11.1"
-pytest-mock-server = "^0.3.0"
-pytest-xdist = "^3.3.1"
+[tool.ruff]
+line-length = 120
 
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+lines-after-imports = 2
+combine-as-imports = true
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff.lint.flake8-annotations]
+suppress-none-returning = true
+allow-star-arg-any = true
 
-[tool.black]
-line-length = "120"
+[tool.mypy]
+strict = true
+
+# [build-system]
+# requires = ["hatchling"]
+# build-backend = "hatchling.build"
